@@ -62,7 +62,7 @@ class User {
 }
 
 class Transactions {
-
+/*
     Book book1 = new Book(1, "Of Skeletons and Dragons", "Belle", "Fantasy");
     Book book2 = new Book(2, "The Chronicles of Adam", "Adam Santi", "Autobiography");
     Book book3 = new Book(3, "A Lost Wallet", "Samdu", "Romance");
@@ -70,7 +70,7 @@ class Transactions {
     User user1 = new User("Janah", 1, false);
     User user2 = new User("Rico", 2, false);
     User user3 = new User("Sesi", 3, false);
-
+*/
 
     ArrayList<Book> books = new ArrayList<>();
     ArrayList<User> users = new ArrayList<>();
@@ -284,7 +284,11 @@ class Transactions {
         JOptionPane.showMessageDialog(null, sb.toString());
     }
 
-    public void displayBooks(){
+    public void displayBooks(){/*
+        books.add(book1);
+        books.add(book2);
+        books.add(book3);*/
+
         if (books.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No books in the system.");
             return;
@@ -298,7 +302,11 @@ class Transactions {
     }
 
 
-    public void displayUsers(){
+    public void displayUsers(){/*
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);*/
+
         if (users.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No users in the system.");
             return;
