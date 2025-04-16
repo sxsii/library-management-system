@@ -1,5 +1,6 @@
 import  javax.swing.*;
 import java.util.*;
+import  java.util.regex.*;
 
 class Book {
     private int ISBN;
@@ -61,8 +62,20 @@ class User {
 }
 
 class Transactions {
+
+    Book book1 = new Book(1, "Of Skeletons and Dragons", "Belle", "Fantasy");
+    Book book2 = new Book(2, "The Chronicles of Adam", "Adam Santi", "Autobiography");
+    Book book3 = new Book(3, "A Lost Wallet", "Samdu", "Romance");
+
+    User user1 = new User("Janah", 1, false);
+    User user2 = new User("Rico", 2, false);
+    User user3 = new User("Sesi", 3, false);
+
+
     ArrayList<Book> books = new ArrayList<>();
     ArrayList<User> users = new ArrayList<>();
+
+
 
     //methods needed: .addBook(/), .removeBook(/), .returnBook(/), .borrowBook(/), .addUser(/), searchForBook(/), byISBN(/), byGenre(/), byName(/), byAuthor(/), displayBooks(/), displayUsers(/)
 
@@ -167,7 +180,7 @@ class Transactions {
             }
         }
     }
-/*
+
     public void searchForBook(){
         boolean running = true;
 
@@ -200,7 +213,11 @@ class Transactions {
         StringBuilder sb = new StringBuilder("Results:\n");
 
         for (Book b : books){
-            if (checkISBN == b.getISBN()){
+            Pattern pattern = Pattern.compile(Integer.toString(checkISBN));
+            Matcher matcher = pattern.matcher(Integer.toString(b.getISBN()));
+            boolean matchfound = matcher.find();
+
+            if (matchfound){
                 sb.append(b.toString()).append("\n");
             } else {
                 sb.append("No results.");
@@ -214,10 +231,12 @@ class Transactions {
         String checkGenre = JOptionPane.showInputDialog("Please input a genre: ");
         StringBuilder sb = new StringBuilder("Results:\n");
 
-
-
         for (Book b : books){
-            if (checkGenre.toLowerCase() == (b.getGenre().toLowerCase())){
+            Pattern pattern = Pattern.compile(checkGenre, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(b.getGenre());
+            boolean matchfound = matcher.find();
+
+            if (matchfound){
                 sb.append(b.toString()).append("\n");
             } else {
                 sb.append("No results.");
@@ -232,7 +251,11 @@ class Transactions {
         StringBuilder sb = new StringBuilder("Results:\n");
 
         for (Book b : books){
-            if (checkAuthor.toLowerCase() == (b.getAuthor()).toLowerCase()){
+            Pattern pattern = Pattern.compile(checkAuthor, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(b.getAuthor());
+            boolean matchfound = matcher.find();
+
+            if (matchfound){
                 sb.append(b.toString()).append("\n");
             } else {
                 sb.append("No results.");
@@ -247,7 +270,11 @@ class Transactions {
         StringBuilder sb = new StringBuilder("Results:\n");
 
         for (Book b : books){
-            if (checkName.toLowerCase() == (b.getName()).toLowerCase()){
+            Pattern pattern = Pattern.compile(checkName, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(b.getName());
+            boolean matchfound = matcher.find();
+
+            if (matchfound){
                 sb.append(b.toString()).append("\n");
             } else {
                 sb.append("No results.");
@@ -256,7 +283,7 @@ class Transactions {
 
         JOptionPane.showMessageDialog(null, sb.toString());
     }
-*/
+
     public void displayBooks(){
         if (books.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No books in the system.");
@@ -291,7 +318,7 @@ public class Main {
         boolean running = true;
 
         while (running) {
-            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books",/* "Browse Books", */"Exit"};
+            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books","Browse Books", "Exit"};
             int choice = JOptionPane.showOptionDialog(null, "Welcome! Choose an option:", "Library Management System",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
@@ -317,10 +344,10 @@ public class Main {
                 case 6:
                     transactions.displayBooks();
                     break;
-                case 7:/*
+                case 7:
                     transactions.searchForBook();
                     break;
-                case 8:*/
+                case 8:
                     JOptionPane.showMessageDialog(null, "Exiting program.");
                     running = false;
                     System.exit(0);
