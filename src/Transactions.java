@@ -1,3 +1,4 @@
+import javax.lang.model.type.NullType;
 import javax.swing.*;
 import java.util.ArrayList;
 import  java.util.regex.*;
@@ -29,8 +30,11 @@ public class Transactions {
 
     public void addUser() {
         try {
-            int libraryID = Integer.parseInt(JOptionPane.showInputDialog("Please input your library ID: "));
+            String testLibraryID = JOptionPane.showInputDialog("Please input your library ID: ");
+            if (testLibraryID == null) return;
+            int libraryID = Integer.parseInt(testLibraryID);
             String name = JOptionPane.showInputDialog("Input your name: ");
+            if (name == null) return;
             boolean owesBooks = false;
 
             User newUser = new User(name, libraryID, owesBooks);
@@ -46,10 +50,15 @@ public class Transactions {
 
     public void addBook(){
         try {
-            int ISBN = Integer.parseInt(JOptionPane.showInputDialog("Please input the book's ISBN: "));
+            String testISBN = JOptionPane.showInputDialog("Please input the book's ISBN: ");
+            if (testISBN == null) return;
+            int ISBN = Integer.parseInt(testISBN);
             String name = JOptionPane.showInputDialog("Input the book's name: ");
+            if (name == null) return;
             String author = JOptionPane.showInputDialog("Input the book's author: ");
+            if (author == null) return;
             String genre = JOptionPane.showInputDialog("Input the book's genre: ");
+            if (genre == null) return;
 
             Book newBook = new Book(ISBN, name, author, genre);
             books.add(newBook);
@@ -60,72 +69,106 @@ public class Transactions {
     }
 
     public void removeBook(){
-        int checkID = Integer.parseInt(JOptionPane.showInputDialog("Please input the book's ISBN: "));
-        boolean check = false;
-        String delname = "";
-        String delauthor = "";
+        try {
+            String testCheckID = JOptionPane.showInputDialog("Please input the book's ISBN: ");
+            if (testCheckID == null) return;
+            int checkID = Integer.parseInt(testCheckID);
+            boolean check = false;
+            String delname = "";
+            String delauthor = "";
 
-        for (Book b : books){
-            if (checkID == b.getISBN()){
-                delname = b.getName();
-                delauthor = b.getAuthor();
-                books.remove(b);
-                check = true;
-                break;
+            for (Book b : books){
+                if (checkID == b.getISBN()){
+                    delname = b.getName();
+                    delauthor = b.getAuthor();
+                    books.remove(b);
+                    check = true;
+                    break;
+                }
             }
-        }
 
-        if(check){
-            JOptionPane.showMessageDialog(null, String.format("%s by %s has successfully been deleted.", delname, delauthor));
-        } else {
-            JOptionPane.showMessageDialog(null, "This book does not exist!");
+            if(check){
+                JOptionPane.showMessageDialog(null, String.format("%s by %s has successfully been deleted.", delname, delauthor));
+            } else {
+                JOptionPane.showMessageDialog(null, "This book does not exist!");
+            }
+        } catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Invalid input! Please enter correct values.");
         }
     }
 
     public void returnBook(){
-        int checkUserID = (Integer.parseInt(JOptionPane.showInputDialog("Please input your library ID: ")));
-        boolean check = false;
+        System.out.println(users);
+        try {
+            String testCheckUserID = JOptionPane.showInputDialog("Please input your library ID: ");
+            if (testCheckUserID == null) return;
+            int checkUserID = Integer.parseInt(testCheckUserID);
+            boolean check = false;
 
-        for (User u : users){
-            if (checkUserID == u.getLibraryID()){
-                check = true;
-                int ISBN = Integer.parseInt(JOptionPane.showInputDialog("Please input the book's ISBN: "));
-                String name = JOptionPane.showInputDialog("Input the book's name: ");
-                String author = JOptionPane.showInputDialog("Input the book's author: ");
-                String genre = JOptionPane.showInputDialog("Input the book's genre: ");
+            for (User u : users){
+                if (checkUserID == u.getLibraryID()){
+                    check = true;
+                    String testISBN = JOptionPane.showInputDialog("Please input the book's ISBN: ");
+                    if (testISBN == null) return;
+                    int ISBN = Integer.parseInt(testISBN);
+                    String name = JOptionPane.showInputDialog("Input the book's name: ");
+                    if (name == null) return;
+                    String author = JOptionPane.showInputDialog("Input the book's author: ");
+                    if (author == null) return;
+                    String genre = JOptionPane.showInputDialog("Input the book's genre: ");
+                    if (genre == null) return;
 
-                Book newBook = new Book(ISBN, name, author, genre);
-                books.add(newBook);
-                JOptionPane.showMessageDialog(null, String.format("You have successfully returned %s by %s!", name, author));
-            } else {
-                JOptionPane.showMessageDialog(null, "This user does not exist!");
+                    Book newBook = new Book(ISBN, name, author, genre);
+                    books.add(newBook);
+                    JOptionPane.showMessageDialog(null, String.format("You have successfully returned %s by %s!", name, author));
+                } else {
+                    JOptionPane.showMessageDialog(null, "This user does not exist!");
+                }
             }
+        } catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Invalid input! Please enter correct values.");
         }
     }
 
     public void borrowBook(){
-        int checkUserID = (Integer.parseInt(JOptionPane.showInputDialog("Please input your library ID: ")));
-        boolean checkUser = false;
-        int checkID = 0;
+        try {
+            String testCheckUserID = JOptionPane.showInputDialog("Please input your library ID: ");
+            if (testCheckUserID == null) return;
+            int checkUserID = Integer.parseInt(testCheckUserID);
+            boolean checkUser = false;
+            int checkID = 0;
+            String testCheckID = "";
 
-        for (User u : users){
-            if (checkUserID == u.getLibraryID()){
-                checkUser = true;
-                checkID = Integer.parseInt(JOptionPane.showInputDialog("Please input the book's ISBN: "));
-                u.setOwesBooks(true);
+            for (User u : users){
+                if (checkUserID == u.getLibraryID()){
+                    checkUser = true;
+                    u.setOwesBooks(true);
+                } else {
+                    checkUser = false;
+                }
+            }
+
+            if (checkUser) {
+                try {
+                    testCheckID = JOptionPane.showInputDialog("Please input the book's ISBN: ");
+                } catch (NumberFormatException e){
+                    JOptionPane.showMessageDialog(null, "This book does not exist!");
+                }
+                if (testCheckID == null) return;
+                checkID = Integer.parseInt(testCheckID);
+
+                for (Book b : books){
+                    if (checkID == b.getISBN()){
+                        JOptionPane.showMessageDialog(null, "You have successfully borrowed " + b.getName() + " by " + b.getAuthor() + "!");
+                        books.remove(b);
+                        break;
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "This user does not exist!");
             }
-        }
-
-        if (checkUser) {
-            for (Book b : books){
-                if (checkID == b.getISBN()){
-                    JOptionPane.showMessageDialog(null, "You have successfully borrowed " + b.getName() + " by " + b.getAuthor() + "!");
-                    books.remove(b);
-                    break;
-                }
-            }
+        }catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(null, "Invalid input! Please enter correct values.");
         }
     }
     /*

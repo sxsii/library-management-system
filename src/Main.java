@@ -7,7 +7,7 @@ public class Main {
         boolean running = true;
 
         while (running) {
-            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books","Browse Books", "Exit"};
+            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books"/*,"Browse Books"*/, "Exit"};
             int choice = JOptionPane.showOptionDialog(null, "Welcome! Choose an option:", "Library Management System",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
@@ -40,6 +40,7 @@ public class Main {
                     JOptionPane.showMessageDialog(null, "Exiting program.");
                     running = false;
                     System.exit(0);
+                    break;
             }
         }
     }
