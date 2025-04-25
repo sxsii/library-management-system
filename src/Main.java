@@ -3,11 +3,10 @@ import  javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         Transactions transactions = new Transactions();
-        transactions.initialiseValues();
         boolean running = true;
 
         while (running) {
-            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books"/*,"Browse Books"*/, "Exit"};
+            String[] options = {"Add User","Add Book", "Borrow Book", "Return Book", "Remove Book", "Display Users", "Display Books","Browse Books", "Exit"};
             int choice = JOptionPane.showOptionDialog(null, "Welcome! Choose an option:", "Library Management System",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
@@ -33,10 +32,10 @@ public class Main {
                 case 6:
                     transactions.displayBooks();
                     break;
-                case 7:/*
+                case 7:
                     transactions.searchForBook();
                     break;
-                case 8:*/
+                case 8:
                     JOptionPane.showMessageDialog(null, "Exiting program.");
                     running = false;
                     System.exit(0);

@@ -1,4 +1,3 @@
-import javax.lang.model.type.NullType;
 import javax.swing.*;
 import java.util.ArrayList;
 import  java.util.regex.*;
@@ -6,6 +5,10 @@ import  java.util.regex.*;
 public class Transactions {
     ArrayList<Book> books = new ArrayList<>();
     ArrayList<User> users = new ArrayList<>();
+
+    public Transactions(){
+        initialiseValues();
+    }
 
     public void initialiseValues(){
         Book book1 = new Book(1, "Of Skeletons and Dragons", "Belle", "Fantasy");
@@ -33,6 +36,14 @@ public class Transactions {
             String testLibraryID = JOptionPane.showInputDialog("Please input your library ID: ");
             if (testLibraryID == null) return;
             int libraryID = Integer.parseInt(testLibraryID);
+
+            for (User u : users) {
+                if (u.getLibraryID() == libraryID) {
+                    JOptionPane.showMessageDialog(null, "User ID already exists!");
+                    return;
+                }
+            }
+
             String name = JOptionPane.showInputDialog("Input your name: ");
             if (name == null) return;
             boolean owesBooks = false;
@@ -53,6 +64,14 @@ public class Transactions {
             String testISBN = JOptionPane.showInputDialog("Please input the book's ISBN: ");
             if (testISBN == null) return;
             int ISBN = Integer.parseInt(testISBN);
+
+            for (Book b : books) {
+                if (b.getISBN() == ISBN) {
+                    JOptionPane.showMessageDialog(null, "ISBN already exists!");
+                    return;
+                }
+            }
+
             String name = JOptionPane.showInputDialog("Input the book's name: ");
             if (name == null) return;
             String author = JOptionPane.showInputDialog("Input the book's author: ");
@@ -73,21 +92,22 @@ public class Transactions {
             String testCheckID = JOptionPane.showInputDialog("Please input the book's ISBN: ");
             if (testCheckID == null) return;
             int checkID = Integer.parseInt(testCheckID);
-            boolean check = false;
             String delname = "";
             String delauthor = "";
 
+            Book bookToRemove = null;
+
             for (Book b : books){
                 if (checkID == b.getISBN()){
+                    bookToRemove = b;
                     delname = b.getName();
                     delauthor = b.getAuthor();
-                    books.remove(b);
-                    check = true;
                     break;
                 }
             }
 
-            if(check){
+            if(bookToRemove != null){
+                books.remove(bookToRemove);
                 JOptionPane.showMessageDialog(null, String.format("%s by %s has successfully been deleted.", delname, delauthor));
             } else {
                 JOptionPane.showMessageDialog(null, "This book does not exist!");
@@ -104,27 +124,41 @@ public class Transactions {
             if (testCheckUserID == null) return;
             int checkUserID = Integer.parseInt(testCheckUserID);
             boolean check = false;
+            int checkID;
+            String testCheckID = "";
 
             for (User u : users){
                 if (checkUserID == u.getLibraryID()){
                     check = true;
-                    String testISBN = JOptionPane.showInputDialog("Please input the book's ISBN: ");
-                    if (testISBN == null) return;
-                    int ISBN = Integer.parseInt(testISBN);
-                    String name = JOptionPane.showInputDialog("Input the book's name: ");
-                    if (name == null) return;
-                    String author = JOptionPane.showInputDialog("Input the book's author: ");
-                    if (author == null) return;
-                    String genre = JOptionPane.showInputDialog("Input the book's genre: ");
-                    if (genre == null) return;
-
-                    Book newBook = new Book(ISBN, name, author, genre);
-                    books.add(newBook);
-                    JOptionPane.showMessageDialog(null, String.format("You have successfully returned %s by %s!", name, author));
-                } else {
-                    JOptionPane.showMessageDialog(null, "This user does not exist!");
+                    u.setOwesBooks(false);
+                    break;
                 }
             }
+
+            if (check){
+                try {
+                    testCheckID = JOptionPane.showInputDialog("Please input the book's ISBN: ");
+                } catch (NumberFormatException e){
+                    JOptionPane.showMessageDialog(null, "Please input correct values.");
+                }
+                if (testCheckID == null) return;
+                checkID = Integer.parseInt(testCheckID);
+
+                for (Book b : books){
+                    if (checkID == b.getISBN()){
+                        if (b.isAvailable()) {
+                            JOptionPane.showMessageDialog(null, "This book is already returned.");
+                            return;
+                        }
+                        JOptionPane.showMessageDialog(null, "You have successfully returned " + b.getName() + " by " + b.getAuthor() + "!");
+                        b.setAvailable(true);
+                        break;
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "This user does not exist!");
+            }
+
         } catch (NumberFormatException e){
             JOptionPane.showMessageDialog(null, "Invalid input! Please enter correct values.");
         }
@@ -136,15 +170,19 @@ public class Transactions {
             if (testCheckUserID == null) return;
             int checkUserID = Integer.parseInt(testCheckUserID);
             boolean checkUser = false;
-            int checkID = 0;
+            int checkID;
             String testCheckID = "";
+            //boolean boolCheck = false;
 
             for (User u : users){
                 if (checkUserID == u.getLibraryID()){
                     checkUser = true;
                     u.setOwesBooks(true);
-                } else {
-                    checkUser = false;
+                    if (u.isOwesBooks()) {
+                        JOptionPane.showMessageDialog(null, "You already borrowed a book!");
+                        return;
+                    }
+                    break;
                 }
             }
 
@@ -159,8 +197,12 @@ public class Transactions {
 
                 for (Book b : books){
                     if (checkID == b.getISBN()){
+                        if (!b.isAvailable()) {
+                            JOptionPane.showMessageDialog(null, "This book is currently unavailable.");
+                            return;
+                        }
                         JOptionPane.showMessageDialog(null, "You have successfully borrowed " + b.getName() + " by " + b.getAuthor() + "!");
-                        books.remove(b);
+                        b.setAvailable(false);
                         break;
                     }
                 }
@@ -171,7 +213,7 @@ public class Transactions {
             JOptionPane.showMessageDialog(null, "Invalid input! Please enter correct values.");
         }
     }
-    /*
+
         public void searchForBook(){
             boolean running = true;
 
@@ -202,17 +244,17 @@ public class Transactions {
         public void byISBN(){
             int checkISBN = Integer.parseInt(JOptionPane.showInputDialog("Please input the book's ISBN: "));
             StringBuilder sb = new StringBuilder("Results:\n");
+            boolean found = false;
 
             for (Book b : books){
-                Pattern pattern = Pattern.compile(Integer.toString(checkISBN));
-                Matcher matcher = pattern.matcher(Integer.toString(b.getISBN()));
-                boolean matchfound = matcher.find();
-
-                if (matchfound){
+                if (b.getISBN() == checkISBN) {
                     sb.append(b.toString()).append("\n");
-                } else {
-                    sb.append("No results.");
+                    found = true;
                 }
+            }
+
+            if (!found) {
+                sb.append("No results.");
             }
 
             JOptionPane.showMessageDialog(null, sb.toString());
@@ -221,17 +263,21 @@ public class Transactions {
         public void byGenre(){
             String checkGenre = JOptionPane.showInputDialog("Please input a genre: ");
             StringBuilder sb = new StringBuilder("Results:\n");
+            boolean found = false;
 
             for (Book b : books){
                 Pattern pattern = Pattern.compile(checkGenre, Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(b.getGenre());
-                boolean matchfound = matcher.find();
+                boolean matchFound = matcher.find();
 
-                if (matchfound){
+                if (matchFound){
+                    found = true;
                     sb.append(b.toString()).append("\n");
-                } else {
-                    sb.append("No results.");
                 }
+            }
+
+            if (!found) {
+                sb.append("No results.");
             }
 
             JOptionPane.showMessageDialog(null, sb.toString());
@@ -240,17 +286,21 @@ public class Transactions {
         public void byAuthor(){
             String checkAuthor = JOptionPane.showInputDialog("Please input an author: ");
             StringBuilder sb = new StringBuilder("Results:\n");
+            boolean found = false;
 
             for (Book b : books){
                 Pattern pattern = Pattern.compile(checkAuthor, Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(b.getAuthor());
-                boolean matchfound = matcher.find();
+                boolean matchFound = matcher.find();
 
-                if (matchfound){
+                if (matchFound){
+                    found = true;
                     sb.append(b.toString()).append("\n");
-                } else {
-                    sb.append("No results.");
                 }
+            }
+
+            if (!found) {
+                sb.append("No results.");
             }
 
             JOptionPane.showMessageDialog(null, sb.toString());
@@ -259,22 +309,26 @@ public class Transactions {
         public void byName(){
             String checkName = JOptionPane.showInputDialog("Please input a name: ");
             StringBuilder sb = new StringBuilder("Results:\n");
+            boolean found = false;
 
             for (Book b : books){
                 Pattern pattern = Pattern.compile(checkName, Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(b.getName());
-                boolean matchfound = matcher.find();
+                boolean matchFound = matcher.find();
 
-                if (matchfound){
+                if (matchFound){
+                    found = true;
                     sb.append(b.toString()).append("\n");
-                } else {
-                    sb.append("No results.");
                 }
+            }
+
+            if (!found) {
+                sb.append("No results.");
             }
 
             JOptionPane.showMessageDialog(null, sb.toString());
         }
-    */
+
     public void displayBooks(){
 
         if (books.isEmpty()) {
